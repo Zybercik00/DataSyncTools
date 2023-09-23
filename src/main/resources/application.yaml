@@ -1,0 +1,30 @@
+
+com:
+  github:
+    zybercik00:
+      excelResource: Chemical treatment process .xlsx
+      sheetName: process data
+
+spring:
+  application:
+    name: liquibase-service
+  datasource:
+    url: jdbc:h2:mem:datasyncdb
+    driverClassName: org.h2.Driver
+    username: sa
+    password: password
+    liquibase:
+      change-log: classpath:db/changelog/app-changelog.xml
+  jpa:
+    database-platform: org.hibernate.dialect.H2Dialect
+    generate-ddl: true
+    defer-datasource-initialization: true
+  h2:
+    console.path: /h2-console
+    console:
+      settings:
+        trace: false
+        web-allow-others: false
+  sql:
+    init:
+      mode: always
