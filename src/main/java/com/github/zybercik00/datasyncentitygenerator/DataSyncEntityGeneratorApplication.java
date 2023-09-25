@@ -41,35 +41,32 @@ public class DataSyncEntityGeneratorApplication {
             try (ResultSet tableResultSet = metaData.getColumns(null, "PUBLIC", null, null)) {
                 while (tableResultSet.next()) {
                     String columnName = tableResultSet.getString("COLUMN_NAME");
-                    System.out.println(columnName);
+                    columns.add(columnName);
                 }
             }
             // TODO [5] fetch primary keys
             try (ResultSet tableResultSet = metaData.getPrimaryKeys(null, "PUBLIC", "EXTRACTION")) {
                 while (tableResultSet.next()) {
                     String pkTable = tableResultSet.getString("PK_NAME");
-                    System.out.println(pkTable);
+                    columns.add(pkTable);
                 }
             }
             // TODO [4] fetch unique indexes
             try (ResultSet tableResultSet = metaData.getIndexInfo(null, null, "EXTRACTION", true, true)) {
                 while (tableResultSet.next()) {
-                    String uiTable = tableResultSet.getString("COLUMN_NAME");
-                    System.out.println(uiTable);
+                    String uiTable = tableResultSet.getString("INDEX_NAME");
                 }
             }
             // TODO [3] fetch foreign keys
             try (ResultSet tableResultSet = metaData.getExportedKeys(null, null, "EXTRACTION")) {
                 while (tableResultSet.next()) {
                     String fkTable = tableResultSet.getString("FKCOLUMN_NAME");
-                    System.out.println(fkTable);
                 }
             }
             // TODO [6] fetch sequences
             try (ResultSet tableResultSet = metaData.getImportedKeys(null, null, "EXTRACTION")) {
                 while (tableResultSet.next()) {
                     String sequence = tableResultSet.getString("KEY_SEQ");
-                    System.out.println(sequence);
                 }
             }
         }
@@ -78,6 +75,10 @@ public class DataSyncEntityGeneratorApplication {
             // TODO [7] Use string templates
             String entityName = table; // TODO [2] Capitalize, FOO_BAR replace with FooBar
             System.out.printf("public class %s {}%n", WordUtils.capitalizeFully(entityName));
+        }
+        for (String column : columns) {
+            String columnName = column;
+            System.out.println((columnName).toLowerCase().replace("_", ""));
         }
 
 
