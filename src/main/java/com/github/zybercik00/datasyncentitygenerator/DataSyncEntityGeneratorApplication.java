@@ -10,7 +10,7 @@ public class DataSyncEntityGeneratorApplication {
 
     public static void main(String[] args) throws SQLException {
         List<String> tables = new ArrayList<>();
-        List<String> columns = new ArrayList<>();
+        List<String> fields = new ArrayList<>();
         // TODO [8] Connection from springboot
         try (Connection connection = DriverManager.getConnection("jdbc:h2:mem:testdb", "admin", "password")) {
             //
@@ -38,17 +38,28 @@ public class DataSyncEntityGeneratorApplication {
                 }
             }
             // TODO [1] fetch columns (names and types)
-            try (ResultSet tableResultSet = metaData.getColumns(null, "PUBLIC", null, null)) {
-                while (tableResultSet.next()) {
-                    String columnName = tableResultSet.getString("COLUMN_NAME");
-                    columns.add(columnName);
+            try (ResultSet columns = metaData.getColumns(null, "PUBLIC", null, null)) {
+                while (columns.next()) {
+                    String columnName = columns.getString("COLUMN_NAME");
+                    String columnSize = columns.getString("COLUMN_SIZE");
+                    String datatype = columns.getString("DATA_TYPE");
+                    String isNullable = columns.getString("IS_NULLABLE");
+                    String isAutoIncrement = columns.getString("IS_AUTOINCREMENT");
+                    fields.add(columnName);
+                    fields.add(columnSize);
+                    fields.add(datatype);
+                    fields.add(isNullable);
+                    fields.add(isAutoIncrement);
                 }
+
             }
             // TODO [5] fetch primary keys
-            try (ResultSet tableResultSet = metaData.getPrimaryKeys(null, "PUBLIC", "EXTRACTION")) {
-                while (tableResultSet.next()) {
-                    String pkTable = tableResultSet.getString("PK_NAME");
-                    columns.add(pkTable);
+            try (ResultSet primaryKeys = metaData.getPrimaryKeys(null, "PUBLIC", "EXTRACTION")) {
+                while (primaryKeys.next()) {
+                    String primaryKeyColumnName = primaryKeys.getString("COLUMN_NAME");
+                    String primaryKeyName = primaryKeys.getString("PK_NAME");
+                    fields.add(primaryKeyColumnName);
+                    fields.add(primaryKeyName);
                 }
             }
             // TODO [4] fetch unique indexes
@@ -58,9 +69,12 @@ public class DataSyncEntityGeneratorApplication {
                 }
             }
             // TODO [3] fetch foreign keys
-            try (ResultSet tableResultSet = metaData.getExportedKeys(null, null, "EXTRACTION")) {
-                while (tableResultSet.next()) {
-                    String fkTable = tableResultSet.getString("FKCOLUMN_NAME");
+            try (ResultSet foreignKeys = metaData.getExportedKeys(null, null, "EXTRACTION")) {
+                while (foreignKeys.next()) {
+                    String pkTableName = foreignKeys.getString("PKTABLE_NAME");
+                    String fkTableName = foreignKeys.getString("FKTABLE_NAME");
+                    String pkColumnName = foreignKeys.getString("PKCOLUMN_NAME");
+                    String fkColumnName = foreignKeys.getString("FKCOLUMN_NAME");
                 }
             }
             // TODO [6] fetch sequences
@@ -76,7 +90,7 @@ public class DataSyncEntityGeneratorApplication {
             String entityName = table; // TODO [2] Capitalize, FOO_BAR replace with FooBar
             System.out.printf("public class %s {}%n", WordUtils.capitalizeFully(entityName));
         }
-        for (String column : columns) {
+        for (String column : fields) {
             String columnName = column;
             System.out.println((columnName).toLowerCase().replace("_", ""));
         }
