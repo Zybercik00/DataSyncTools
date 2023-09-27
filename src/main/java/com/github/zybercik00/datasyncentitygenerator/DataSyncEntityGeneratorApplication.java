@@ -10,7 +10,7 @@ public class DataSyncEntityGeneratorApplication {
 
     public static void main(String[] args) throws SQLException {
         List<String> tables = new ArrayList<>();
-        List<String> fields = new ArrayList<>();
+        List<Column> fields = new ArrayList<>();
         // TODO [8] Connection from springboot
         try (Connection connection = DriverManager.getConnection("jdbc:h2:mem:testdb", "admin", "password")) {
             //
@@ -45,11 +45,7 @@ public class DataSyncEntityGeneratorApplication {
                     String datatype = columns.getString("DATA_TYPE");
                     String isNullable = columns.getString("IS_NULLABLE");
                     String isAutoIncrement = columns.getString("IS_AUTOINCREMENT");
-                    fields.add(columnName);
-                    fields.add(columnSize);
-                    fields.add(datatype);
-                    fields.add(isNullable);
-                    fields.add(isAutoIncrement);
+                    fields.add(new Column(columnName, datatype));
                 }
 
             }
@@ -58,8 +54,7 @@ public class DataSyncEntityGeneratorApplication {
                 while (primaryKeys.next()) {
                     String primaryKeyColumnName = primaryKeys.getString("COLUMN_NAME");
                     String primaryKeyName = primaryKeys.getString("PK_NAME");
-                    fields.add(primaryKeyColumnName);
-                    fields.add(primaryKeyName);
+
                 }
             }
             // TODO [4] fetch unique indexes
@@ -90,13 +85,29 @@ public class DataSyncEntityGeneratorApplication {
             String entityName = table; // TODO [2] Capitalize, FOO_BAR replace with FooBar
             System.out.printf("public class %s {}%n", WordUtils.capitalizeFully(entityName));
         }
-        for (String column : fields) {
-            String columnName = column;
-            System.out.println((columnName).toLowerCase().replace("_", ""));
+        for (Column column : fields) {
+            Column columnName = column;
+            System.out.printf("private %s%n",toSnake(String.valueOf(columnName)));
         }
 
-
-
+    }
+    public static String toSnake(String in) {
+        boolean first = true;
+        boolean afterUnderscore = false;
+        char[] chars = in.toCharArray();
+        for (int i = 0; i < chars.length; i++) {
+            if ((first || afterUnderscore) && Character.isAlphabetic(chars[i])) {
+                chars[i] = Character.toUpperCase(chars[i]);
+                first = false;
+                afterUnderscore = false;
+            } else if (chars[i] == '_') {
+                chars[i] = chars[i];
+                afterUnderscore = true;
+            } else if (Character.isAlphabetic(chars[i])) {
+                chars[i] = Character.toLowerCase(chars[i]);
+            }
+        }
+        return new String(chars);
     }
 
 }
