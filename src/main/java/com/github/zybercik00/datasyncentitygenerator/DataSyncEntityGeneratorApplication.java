@@ -3,7 +3,6 @@ package com.github.zybercik00.datasyncentitygenerator;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
-import org.apache.commons.text.WordUtils;
 
 
 public class DataSyncEntityGeneratorApplication {
@@ -87,10 +86,23 @@ public class DataSyncEntityGeneratorApplication {
         }
         for (Column column : fields) {
             Column columnName = column;
-            System.out.printf("private %s%n", toCamelCase(String.valueOf(columnName)));
+            String type = convertTypes(column.getType());
+            System.out.printf("private %s %n",type + toCamelCase(String.valueOf(columnName)));
         }
 
 
+    }
+
+    public static String convertTypes(String value) {
+        switch (value) {
+            case "-5":
+               return "long ";
+            case "93":
+                return "Timestamp ";
+            case "2":
+                return "BigDecimal ";
+        }
+        return value;
     }
     public static String toCamelCase(String in) {
         StringBuilder targetTxt = new StringBuilder();
@@ -129,6 +141,5 @@ public class DataSyncEntityGeneratorApplication {
         }
         return targetTxt.toString();
     }
-
 
 }
