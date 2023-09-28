@@ -87,27 +87,29 @@ public class DataSyncEntityGeneratorApplication {
         }
         for (Column column : fields) {
             Column columnName = column;
-            System.out.printf("private %s%n",toSnake(String.valueOf(columnName)));
+            System.out.printf("private %s%n", toCamelCase(String.valueOf(columnName)));
         }
 
     }
-    public static String toSnake(String in) {
-        boolean first = true;
+    public static String toCamelCase(String in) {
+        StringBuilder targetTxt = new StringBuilder();
+        boolean first = false;
         boolean afterUnderscore = false;
-        char[] chars = in.toCharArray();
-        for (int i = 0; i < chars.length; i++) {
-            if ((first || afterUnderscore) && Character.isAlphabetic(chars[i])) {
-                chars[i] = Character.toUpperCase(chars[i]);
+        for (int i = 0; i < in.length(); i++) {
+            char c = in.charAt(i);
+            if ((first || afterUnderscore) && Character.isAlphabetic(c)) {
+                targetTxt.append(Character.toUpperCase(c));
                 first = false;
                 afterUnderscore = false;
-            } else if (chars[i] == '_') {
-                chars[i] = chars[i];
+            } else if (c == '_') {
                 afterUnderscore = true;
-            } else if (Character.isAlphabetic(chars[i])) {
-                chars[i] = Character.toLowerCase(chars[i]);
+                first = true;
+            } else if (Character.isAlphabetic(c)) {
+                targetTxt.append(Character.toLowerCase(c));
             }
         }
-        return new String(chars);
+        return targetTxt.toString();
     }
+
 
 }
