@@ -83,12 +83,13 @@ public class DataSyncEntityGeneratorApplication {
         for (String table : tables) {
             // TODO [7] Use string templates
             String entityName = table; // TODO [2] Capitalize, FOO_BAR replace with FooBar
-            System.out.printf("public class %s {}%n", WordUtils.capitalizeFully(entityName));
+            System.out.printf("public class %s {}%n", toPascalCase(entityName));
         }
         for (Column column : fields) {
             Column columnName = column;
             System.out.printf("private %s%n", toCamelCase(String.valueOf(columnName)));
         }
+
 
     }
     public static String toCamelCase(String in) {
@@ -104,6 +105,24 @@ public class DataSyncEntityGeneratorApplication {
             } else if (c == '_') {
                 afterUnderscore = true;
                 first = true;
+            } else if (Character.isAlphabetic(c)) {
+                targetTxt.append(Character.toLowerCase(c));
+            }
+        }
+        return targetTxt.toString();
+    }
+    public static String toPascalCase(String in) {
+        StringBuilder targetTxt = new StringBuilder();
+        boolean first = true;
+        boolean afterUnderscore = false;
+        for (int i = 0; i < in.length(); i++) {
+            char c = in.charAt(i);
+            if ((first || afterUnderscore) && Character.isAlphabetic(c)) {
+                targetTxt.append(Character.toUpperCase(c));
+                first = false;
+                afterUnderscore = false;
+            } else if (c == '_') {
+                afterUnderscore = true;
             } else if (Character.isAlphabetic(c)) {
                 targetTxt.append(Character.toLowerCase(c));
             }
