@@ -78,18 +78,18 @@ public class DataSyncEntityGeneratorApplication {
                 }
             }
         }
-
+        
         for (String table : tables) {
             // TODO [7] Use string templates
             String entityName = table; // TODO [2] Capitalize, FOO_BAR replace with FooBar
-            System.out.printf("public class %s {}%n", toPascalCase(entityName));
-        }
+            System.out.printf("public class %s {%n", toPascalCase(entityName));
+            }
         for (Column column : fields) {
             Column columnName = column;
             String type = convertTypes(column.getType());
-            System.out.printf("private %s %n",type + toCamelCase(String.valueOf(columnName)));
+            System.out.printf("private %s; %n", type + toCamelCase(String.valueOf(columnName)));
         }
-
+        System.out.println("}");
 
     }
 
@@ -101,6 +101,26 @@ public class DataSyncEntityGeneratorApplication {
                 return "Timestamp ";
             case "2":
                 return "BigDecimal ";
+            case "12":
+                return "String ";
+            case "1":
+                return "String ";
+            case "4":
+                return "int ";
+            case "8":
+                return "double ";
+            case "91":
+                return "Date ";
+            case "92":
+                return "Time ";
+            case "2003":
+                return "Array  ";
+            case "2000":
+                return "Object ";
+            case "70":
+                return "URL ";
+            case "2009":
+                return "String ";
         }
         return value;
     }
