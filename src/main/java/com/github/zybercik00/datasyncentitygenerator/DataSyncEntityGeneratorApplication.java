@@ -1,5 +1,7 @@
 package com.github.zybercik00.datasyncentitygenerator;
 
+import java.io.FileWriter;
+import java.io.IOException;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -78,18 +80,31 @@ public class DataSyncEntityGeneratorApplication {
                 }
             }
         }
-        
+        String outputPath = "/Users/kamilchmiel/Desktop/Projects/DataSyncExcelDraft/data-sync-entity-generator/src/main/java/com/github/zybercik00/datasyncentitygenerator/";
+        StringBuilder clasTemplate = new StringBuilder();
+        String entityName = null;
         for (String table : tables) {
             // TODO [7] Use string templates
-            String entityName = table; // TODO [2] Capitalize, FOO_BAR replace with FooBar
-            System.out.printf("public class %s {%n", toPascalCase(entityName));
-            }
+            entityName = table;
+            clasTemplate.append(String.format("public class %s {%n", toPascalCase(entityName)));
+        }
         for (Column column : fields) {
             Column columnName = column;
             String type = convertTypes(column.getType());
-            System.out.printf("private %s; %n", type + toCamelCase(String.valueOf(columnName)));
+            clasTemplate.append(String.format("private %s; %n", type + toCamelCase(String.valueOf(columnName))));
         }
-        System.out.println("}");
+        clasTemplate.append("}\n");
+        String fileName = toPascalCase(entityName) + ".java";
+        String filePath = outputPath + fileName;
+        try {
+            FileWriter fileWriter = new FileWriter(filePath);
+            fileWriter.write("package com.github.zybercik00.datasyncentitygenerator;\n\n");
+            fileWriter.write(clasTemplate.toString());
+            fileWriter.close();
+            System.out.println("Plik GeneratedClass.java został utworzony.");
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
 
     }
 
