@@ -81,19 +81,28 @@ public class DataSyncEntityGeneratorApplication {
             }
         }
         String outputPath = "/Users/kamilchmiel/Desktop/Projects/DataSyncExcelDraft/data-sync-entity-generator/src/main/java/com/github/zybercik00/datasyncentitygenerator/";
+
         StringBuilder clasTemplate = new StringBuilder();
+
         String entityName = null;
+        for (Column column : fields){
+            String type = convertTypesToImports(column.getType());
+            clasTemplate.append(type);
+
+        }
         for (String table : tables) {
             // TODO [7] Use string templates
             entityName = table;
-            clasTemplate.append(String.format("public class %s {%n", toPascalCase(entityName)));
+            clasTemplate.append(String.format("public class %s {%n\n", toPascalCase(entityName)));
         }
         for (Column column : fields) {
             Column columnName = column;
             String type = convertTypes(column.getType());
             clasTemplate.append(String.format("private %s; %n", type + toCamelCase(String.valueOf(columnName))));
         }
-        clasTemplate.append("}\n");
+
+        clasTemplate.append("\n}\n");
+
         String fileName = toPascalCase(entityName) + ".java";
         String filePath = outputPath + fileName;
         try {
@@ -106,6 +115,17 @@ public class DataSyncEntityGeneratorApplication {
             e.printStackTrace();
         }
 
+    }
+    public static String convertTypesToImports(String value) {
+        switch (value) {
+            case "2":
+                return "import java.math.BigDecimal;\n ";
+            case "93":
+                return "import java.security.Timestamp;\n ";
+            case "-5":
+                return "\n ";
+        }
+        return value;
     }
 
     public static String convertTypes(String value) {
