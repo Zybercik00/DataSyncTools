@@ -80,14 +80,14 @@ public class DataSyncEntityGeneratorApplication {
             for (JdbcTable table : tables) {
                 JavaClass javaClass = new JavaClass();
                 javaClass.setPackageName("com.github.zybercik00.material");
-                String entityName = toPascalCase(table.getName());
+                String entityName = CaseConverter.toPascalCase(table.getName());
                 javaClass.setName(entityName);
 
 
                 ArrayList<JavaField> fields = new ArrayList<>();
                 for (JdbcColumn column : table.getColumns()) {
-                    Class<?> fieldType = convertTypes(column.getType());
-                    String fieldName = toCamelCase(column.getName());
+                    Class<?> fieldType = TypesConverter.convertTypes(column.getType());
+                    String fieldName = CaseConverter.toCamelCase(column.getName());
                     JavaField javaField = new JavaField(fieldType, fieldName);
                     fields.add(javaField);
                 }
@@ -223,74 +223,35 @@ public class DataSyncEntityGeneratorApplication {
         }
     }
 
-    public static String convertTypesToImports(String value) {
-        switch (value) {
-            case "2":
-                return "import java.math.BigDecimal;\n ";
-            case "93":
-                return "import java.security.Timestamp;\n ";
-            case "-5":
-                return "\n ";
-        }
-        return value;
-    }
-
-    public static Class<?> convertTypes(int sqlType) {
-        return switch (sqlType) {
-            case Types.BIGINT -> Long.class;
-            case Types.TIMESTAMP -> Timestamp.class;
-            case Types.NUMERIC -> BigDecimal.class;
-//            case "12" -> "String";
-//            case "1" -> "String";
-//            case "4" -> "int";
-//            case "8" -> "double";
-//            case "91" -> "Date";
-//            case "92" -> "Time";
-//            case "2003" -> "Array ";
-//            case "2000" -> "Object";
-//            case "70" -> "URL";
-//            case "2009" -> "String";
-            default -> throw new IllegalArgumentException("Unexpected type: " + sqlType);
-        };
-    }
-
-    public static String toCamelCase(String in) {
-        StringBuilder targetTxt = new StringBuilder();
-        boolean first = false;
-        boolean afterUnderscore = false;
-        for (int i = 0; i < in.length(); i++) {
-            char c = in.charAt(i);
-            if ((first || afterUnderscore) && Character.isAlphabetic(c)) {
-                targetTxt.append(Character.toUpperCase(c));
-                first = false;
-                afterUnderscore = false;
-            } else if (c == '_') {
-                afterUnderscore = true;
-                first = true;
-            } else if (Character.isAlphabetic(c)) {
-                targetTxt.append(Character.toLowerCase(c));
-            }
-        }
-        return targetTxt.toString();
-    }
-
-    public static String toPascalCase(String in) {
-        StringBuilder targetTxt = new StringBuilder();
-        boolean first = true;
-        boolean afterUnderscore = false;
-        for (int i = 0; i < in.length(); i++) {
-            char c = in.charAt(i);
-            if ((first || afterUnderscore) && Character.isAlphabetic(c)) {
-                targetTxt.append(Character.toUpperCase(c));
-                first = false;
-                afterUnderscore = false;
-            } else if (c == '_') {
-                afterUnderscore = true;
-            } else if (Character.isAlphabetic(c)) {
-                targetTxt.append(Character.toLowerCase(c));
-            }
-        }
-        return targetTxt.toString();
-    }
+//    public static String convertTypesToImports(String value) {
+//        switch (value) {
+//            case "2":
+//                return "import java.math.BigDecimal;\n ";
+//            case "93":
+//                return "import java.security.Timestamp;\n ";
+//            case "-5":
+//                return "\n ";
+//        }
+//        return value;
+//    }
+//
+//    public static Class<?> convertTypes(int sqlType) {
+//        return switch (sqlType) {
+//            case Types.BIGINT -> Long.class;
+//            case Types.TIMESTAMP -> Timestamp.class;
+//            case Types.NUMERIC -> BigDecimal.class;
+////            case "12" -> "String";
+////            case "1" -> "String";
+////            case "4" -> "int";
+////            case "8" -> "double";
+////            case "91" -> "Date";
+////            case "92" -> "Time";
+////            case "2003" -> "Array ";
+////            case "2000" -> "Object";
+////            case "70" -> "URL";
+////            case "2009" -> "String";
+//            default -> throw new IllegalArgumentException("Unexpected type: " + sqlType);
+//        };
+//    }
 
 }
