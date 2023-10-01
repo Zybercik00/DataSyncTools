@@ -93,17 +93,17 @@ public class DataSyncEntityGeneratorApplication {
         for (String table : tables) {
             // TODO [7] Use string templates
             entityName = table;
-            clasTemplate.append(String.format("public class %s {%n\n", toPascalCase(entityName)));
+            clasTemplate.append(String.format("public class %s {%n\n", CaseConverter.toPascalCase(entityName)));
         }
         for (Column column : fields) {
             Column columnName = column;
             String type = convertTypes(column.getType());
-            clasTemplate.append(String.format("private %s; %n", type + toCamelCase(String.valueOf(columnName))));
+            clasTemplate.append(String.format("private %s; %n", type + CaseConverter.toCamelCase(String.valueOf(columnName))));
         }
 
         clasTemplate.append("\n}\n");
 
-        String fileName = toPascalCase(entityName) + ".java";
+        String fileName = CaseConverter.toPascalCase(entityName) + ".java";
         String filePath = outputPath + fileName;
         try {
             FileWriter fileWriter = new FileWriter(filePath);
@@ -159,42 +159,6 @@ public class DataSyncEntityGeneratorApplication {
         }
         return value;
     }
-    public static String toCamelCase(String in) {
-        StringBuilder targetTxt = new StringBuilder();
-        boolean first = false;
-        boolean afterUnderscore = false;
-        for (int i = 0; i < in.length(); i++) {
-            char c = in.charAt(i);
-            if ((first || afterUnderscore) && Character.isAlphabetic(c)) {
-                targetTxt.append(Character.toUpperCase(c));
-                first = false;
-                afterUnderscore = false;
-            } else if (c == '_') {
-                afterUnderscore = true;
-                first = true;
-            } else if (Character.isAlphabetic(c)) {
-                targetTxt.append(Character.toLowerCase(c));
-            }
-        }
-        return targetTxt.toString();
-    }
-    public static String toPascalCase(String in) {
-        StringBuilder targetTxt = new StringBuilder();
-        boolean first = true;
-        boolean afterUnderscore = false;
-        for (int i = 0; i < in.length(); i++) {
-            char c = in.charAt(i);
-            if ((first || afterUnderscore) && Character.isAlphabetic(c)) {
-                targetTxt.append(Character.toUpperCase(c));
-                first = false;
-                afterUnderscore = false;
-            } else if (c == '_') {
-                afterUnderscore = true;
-            } else if (Character.isAlphabetic(c)) {
-                targetTxt.append(Character.toLowerCase(c));
-            }
-        }
-        return targetTxt.toString();
-    }
+
 
 }
