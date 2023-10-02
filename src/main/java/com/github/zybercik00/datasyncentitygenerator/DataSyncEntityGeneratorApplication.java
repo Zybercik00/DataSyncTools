@@ -1,15 +1,16 @@
 package com.github.zybercik00.datasyncentitygenerator;
 
-import java.io.FileWriter;
+import org.apache.velocity.Template;
+import org.apache.velocity.VelocityContext;
+import org.apache.velocity.app.VelocityEngine;
+
 import java.io.IOException;
 import java.io.StringWriter;
-import java.math.BigDecimal;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.sql.*;
 import java.util.ArrayList;
-import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -19,6 +20,7 @@ public class DataSyncEntityGeneratorApplication {
     public static void main(String[] args) throws SQLException, IOException {
         List<JdbcTable> tables = new ArrayList<>();
         List<JavaClass> classes = new ArrayList<>();
+
 
         // TODO [8] Connection from springboot
         try (Connection connection = DriverManager.getConnection("jdbc:h2:mem:testdb", "admin", "password")) {
@@ -77,6 +79,7 @@ public class DataSyncEntityGeneratorApplication {
                 table.setColumns(columns);
             }
 
+
             for (JdbcTable table : tables) {
                 JavaClass javaClass = new JavaClass();
                 javaClass.setPackageName("com.github.zybercik00.material");
@@ -96,14 +99,16 @@ public class DataSyncEntityGeneratorApplication {
                 classes.add(javaClass);
             }
 
-            for (JavaClass javaClass : classes) {
-                Set<String> imports = new LinkedHashSet<>();
-                for (JavaField javaField : javaClass.getFields()) {
-                    Class<?> fieldType = javaField.getType();
-                    imports.add(fieldType.getName());
-                }
-                javaClass.setImports(imports);
-            }
+//            Set<String> imports = null;
+//            for (JavaClass javaClass : classes) {
+//                imports = new LinkedHashSet<>();
+//                for (JavaField javaField : javaClass.getFields()) {
+//                    Class<?> fieldType = javaField.getType();
+//                    imports.add(fieldType.getName());
+//                }
+//                javaClass.setImports(imports);
+//            }
+//            return imports;
 
             extractMetaData(tables, metaData);
         }
@@ -146,22 +151,53 @@ public class DataSyncEntityGeneratorApplication {
             String javaSource = generateJavaSource(aClass);
             Files.writeString(javaSourcePath, javaSource);
         }
+        for (JavaClass javaClass : classes) {
+            Set<String> imports = classes.forEach().getImports();
+            List<JavaField> fields1 = classes.getFirst().getFields();
+            String name = classes.getFirst().getName();
+
+            String velocityTemplate = """
+                package $packageName;
+                                
+                #foreach( $anImport in $imports )
+                import $anImport;
+                #end
+                                
+                public class $name {
+                                
+                #foreach( $anField in $fields )
+                    $anField;
+                #end
+                                
+                }
+                """;
+
+            VelocityEngine velocityEngine = new VelocityEngine();
+            velocityEngine.setProperty("resource.loader", "class");
+            velocityEngine.setProperty("class.resource.loader.class", "org.apache.velocity.runtime.resource.loader.ClasspathResourceLoader");
+
+            velocityEngine.init();
+            Template template = velocityEngine.getTemplate("template.vm");
+            VelocityContext context = new VelocityContext();
+            String packageName = "com.github.zybercik00.material";
+
+            context.put("packageName", packageName);
+            context.put("imports", imports);
+            context.put("name", name);
+            context.put("fields", fields1);
+            StringWriter writer = new StringWriter();
+            template.merge(context, writer);
+
+        }
+
     }
 
     private static String generateJavaSource(JavaClass aClass) {
         // TODO Use Velocity https://en.wikipedia.org/wiki/Apache_Velocity
         // TODO Usage: https://www.baeldung.com/apache-velocity
 
-        String velocityTemplate = """
-                package $packageName;
 
-                #foreach( $anImport in $imports )
-                import $anImport;
-                #end
 
-                public class $name {
-                }
-                """;
 
         StringBuilder javaSource = new StringBuilder()
                 .append("package ").append(aClass.getPackageName()).append(";\n")

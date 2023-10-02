@@ -1,0 +1,13 @@
+package $packageName;
+
+#foreach( $anImport in $imports )
+import $anImport;
+#end
+
+public class $name {
+
+#foreach( $anField in $fields )
+    $anField;
+#end
+
+}
