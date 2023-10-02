@@ -80,13 +80,11 @@ public class DataSyncEntityGeneratorApplication {
                 table.setColumns(columns);
             }
 
-
             for (JdbcTable table : tables) {
                 JavaClass javaClass = new JavaClass();
                 javaClass.setPackageName("com.github.zybercik00.material");
                 String entityName = CaseConverter.toPascalCase(table.getName());
                 javaClass.setName(entityName);
-
 
                 ArrayList<JavaField> fields = new ArrayList<>();
                 for (JdbcColumn column : table.getColumns()) {
@@ -108,37 +106,11 @@ public class DataSyncEntityGeneratorApplication {
                     }
                     javaClass.setImports(imports);
                 }
-
             }
-
             extractMetaData(tables, metaData);
         }
+
         String outputPath = "data-sync-entity-generator/src/main/java/";
-
-//        StringBuilder clasTemplate = new StringBuilder();
-
-//        String entityName = null;
-//        for (Column column : fields){
-//            String type = convertTypesToImports(column.getType());
-//            clasTemplate.append(type);
-//
-//        }
-//        for (String table : tables) {
-//            // TODO [7] Use string templates
-//            entityName = table;
-//            clasTemplate.append(String.format("public class %s {%n\n", toPascalCase(entityName)));
-//        }
-//        for (Column column : fields) {
-//            Column columnName = column;
-//            String type = convertTypes(column.getType());
-//            clasTemplate.append(String.format("private %s; %n", type + toCamelCase(String.valueOf(columnName))));
-//        }
-//
-//        clasTemplate.append("\n}\n");
-//
-//        String fileName = toPascalCase(entityName) + ".java";
-//        String filePath = outputPath + fileName;
-
 
         Files.createDirectories(Paths.get(outputPath));
         for (JavaClass aClass : classes) {
@@ -149,28 +121,9 @@ public class DataSyncEntityGeneratorApplication {
             Path javaSourcePath = packageDirectory.resolve(aClass.getName() + ".java");
             System.out.printf("Writing class %s.%s to %s%n", aClass.getPackageName(), aClass.getName(), javaSourcePath.toAbsolutePath());
 
-//            String javaSource = generateJavaSource(aClass);
-
-
             Set<String> imports = aClass.getImports();
             List<JavaField> fields = aClass.getFields();
             String name = aClass.getName();
-
-            String velocityTemplate = """
-                package $packageName;
-                                
-                #foreach( $anImport in $imports )
-                import $anImport;
-                #end
-                                
-                public class $name {
-                                
-                #foreach( $anField in $fields )
-                    $anField;
-                #end
-                                
-                }
-                """;
 
             VelocityEngine velocityEngine = new VelocityEngine();
             velocityEngine.setProperty("resource.loader", "class");
@@ -189,38 +142,10 @@ public class DataSyncEntityGeneratorApplication {
             template.merge(context, writer);
 
             Files.writeString(javaSourcePath, writer.toString());
-            System.out.println(writer);
-
+            System.out.println("Class: " + aClass.getName() + " was written");
         }
 
     }
-
-//    private static String generateJavaSource(JavaClass aClass) {
-//        // TODO Use Velocity https://en.wikipedia.org/wiki/Apache_Velocity
-//        // TODO Usage: https://www.baeldung.com/apache-velocity
-//
-//
-//
-//
-//        StringBuilder javaSource = new StringBuilder()
-//                .append("package ").append(aClass.getPackageName()).append(";\n")
-//                .append("\n");
-//        for (String anImport : aClass.getImports()) {
-//            javaSource.append("import ").append(anImport).append(";\n");
-//        }
-//        javaSource.append("\n")
-//                .append("public class ").append(aClass.getName()).append(" {\n")
-//                .append("\n");
-//        for (JavaField field : aClass.getFields()) {
-//            javaSource.append("  ").append("private ")
-//                    .append(field.getType().getSimpleName()).append(" ")
-//                    .append(field.getName()).append(";\n");
-//        }
-//        javaSource.append("\n")
-//                .append("}\n")
-//        ;
-//        return javaSource.toString();
-//    }
 
     private static void extractMetaData(List<JdbcTable> tables, DatabaseMetaData metaData) throws SQLException {
         for (JdbcTable table : tables) {
@@ -261,36 +186,4 @@ public class DataSyncEntityGeneratorApplication {
             }
         }
     }
-
-//    public static String convertTypesToImports(String value) {
-//        switch (value) {
-//            case "2":
-//                return "import java.math.BigDecimal;\n ";
-//            case "93":
-//                return "import java.security.Timestamp;\n ";
-//            case "-5":
-//                return "\n ";
-//        }
-//        return value;
-//    }
-//
-//    public static Class<?> convertTypes(int sqlType) {
-//        return switch (sqlType) {
-//            case Types.BIGINT -> Long.class;
-//            case Types.TIMESTAMP -> Timestamp.class;
-//            case Types.NUMERIC -> BigDecimal.class;
-////            case "12" -> "String";
-////            case "1" -> "String";
-////            case "4" -> "int";
-////            case "8" -> "double";
-////            case "91" -> "Date";
-////            case "92" -> "Time";
-////            case "2003" -> "Array ";
-////            case "2000" -> "Object";
-////            case "70" -> "URL";
-////            case "2009" -> "String";
-//            default -> throw new IllegalArgumentException("Unexpected type: " + sqlType);
-//        };
-//    }
-
 }
