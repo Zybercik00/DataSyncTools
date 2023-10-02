@@ -6,8 +6,14 @@ import lombok.ToString;
 
 @Getter
 @RequiredArgsConstructor
-@ToString
+
 public class JavaField {
     private final Class<?> type;// TODO Use custom type JavaType
     private final String name;
+
+    @Override
+    public String toString() {
+        return
+                type + name + '\'';
+    }
 }

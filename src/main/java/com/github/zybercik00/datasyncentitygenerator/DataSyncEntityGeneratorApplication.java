@@ -11,6 +11,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.sql.*;
 import java.util.ArrayList;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -97,18 +98,18 @@ public class DataSyncEntityGeneratorApplication {
                 javaClass.setFields(fields);
 
                 classes.add(javaClass);
-            }
 
-//            Set<String> imports = null;
-//            for (JavaClass javaClass : classes) {
-//                imports = new LinkedHashSet<>();
-//                for (JavaField javaField : javaClass.getFields()) {
-//                    Class<?> fieldType = javaField.getType();
-//                    imports.add(fieldType.getName());
-//                }
-//                javaClass.setImports(imports);
-//            }
-//            return imports;
+                Set<String> imports = null;
+                for (JavaClass javaImports : classes) {
+                    imports = new LinkedHashSet<>();
+                    for (JavaField javaField : javaClass.getFields()) {
+                        Class<?> fieldType = javaField.getType();
+                        imports.add(fieldType.getName());
+                    }
+                    javaClass.setImports(imports);
+                }
+
+            }
 
             extractMetaData(tables, metaData);
         }
@@ -148,13 +149,12 @@ public class DataSyncEntityGeneratorApplication {
             Path javaSourcePath = packageDirectory.resolve(aClass.getName() + ".java");
             System.out.printf("Writing class %s.%s to %s%n", aClass.getPackageName(), aClass.getName(), javaSourcePath.toAbsolutePath());
 
-            String javaSource = generateJavaSource(aClass);
-            Files.writeString(javaSourcePath, javaSource);
-        }
-        for (JavaClass javaClass : classes) {
-            Set<String> imports = classes.forEach().getImports();
-            List<JavaField> fields1 = classes.getFirst().getFields();
-            String name = classes.getFirst().getName();
+//            String javaSource = generateJavaSource(aClass);
+
+
+            Set<String> imports = aClass.getImports();
+            List<JavaField> fields = aClass.getFields();
+            String name = aClass.getName();
 
             String velocityTemplate = """
                 package $packageName;
@@ -175,49 +175,52 @@ public class DataSyncEntityGeneratorApplication {
             VelocityEngine velocityEngine = new VelocityEngine();
             velocityEngine.setProperty("resource.loader", "class");
             velocityEngine.setProperty("class.resource.loader.class", "org.apache.velocity.runtime.resource.loader.ClasspathResourceLoader");
-
             velocityEngine.init();
-            Template template = velocityEngine.getTemplate("template.vm");
-            VelocityContext context = new VelocityContext();
-            String packageName = "com.github.zybercik00.material";
 
+            Template template = velocityEngine.getTemplate("template.vm");
+
+            VelocityContext context = new VelocityContext();
             context.put("packageName", packageName);
             context.put("imports", imports);
             context.put("name", name);
-            context.put("fields", fields1);
+            context.put("fields", fields);
+
             StringWriter writer = new StringWriter();
             template.merge(context, writer);
 
+            Files.writeString(javaSourcePath, writer.toString());
+            System.out.println(writer);
+
         }
 
     }
 
-    private static String generateJavaSource(JavaClass aClass) {
-        // TODO Use Velocity https://en.wikipedia.org/wiki/Apache_Velocity
-        // TODO Usage: https://www.baeldung.com/apache-velocity
-
-
-
-
-        StringBuilder javaSource = new StringBuilder()
-                .append("package ").append(aClass.getPackageName()).append(";\n")
-                .append("\n");
-        for (String anImport : aClass.getImports()) {
-            javaSource.append("import ").append(anImport).append(";\n");
-        }
-        javaSource.append("\n")
-                .append("public class ").append(aClass.getName()).append(" {\n")
-                .append("\n");
-        for (JavaField field : aClass.getFields()) {
-            javaSource.append("  ").append("private ")
-                    .append(field.getType().getSimpleName()).append(" ")
-                    .append(field.getName()).append(";\n");
-        }
-        javaSource.append("\n")
-                .append("}\n")
-        ;
-        return javaSource.toString();
-    }
+//    private static String generateJavaSource(JavaClass aClass) {
+//        // TODO Use Velocity https://en.wikipedia.org/wiki/Apache_Velocity
+//        // TODO Usage: https://www.baeldung.com/apache-velocity
+//
+//
+//
+//
+//        StringBuilder javaSource = new StringBuilder()
+//                .append("package ").append(aClass.getPackageName()).append(";\n")
+//                .append("\n");
+//        for (String anImport : aClass.getImports()) {
+//            javaSource.append("import ").append(anImport).append(";\n");
+//        }
+//        javaSource.append("\n")
+//                .append("public class ").append(aClass.getName()).append(" {\n")
+//                .append("\n");
+//        for (JavaField field : aClass.getFields()) {
+//            javaSource.append("  ").append("private ")
+//                    .append(field.getType().getSimpleName()).append(" ")
+//                    .append(field.getName()).append(";\n");
+//        }
+//        javaSource.append("\n")
+//                .append("}\n")
+//        ;
+//        return javaSource.toString();
+//    }
 
     private static void extractMetaData(List<JdbcTable> tables, DatabaseMetaData metaData) throws SQLException {
         for (JdbcTable table : tables) {
