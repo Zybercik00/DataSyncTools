@@ -14,6 +14,6 @@ public class JavaField {
     @Override
     public String toString() {
         return
-                type + name + '\'';
+                type.getSimpleName() + " " + name;
     }
 }

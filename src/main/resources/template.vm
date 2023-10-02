@@ -7,7 +7,7 @@ import $anImport;
 public class $name {
 
 #foreach( $anField in $fields )
-    $anField;
+    private $anField;
 #end
 
 }
