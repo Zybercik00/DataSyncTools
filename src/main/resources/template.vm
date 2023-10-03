@@ -1,13 +1,14 @@
-package $packageName;
+package ${javaClass.packageName};
 
-#foreach( $anImport in $imports )
-import $anImport;
+#foreach( $import in $javaClass.imports )
+import ${import};
 #end
 
-public class $name {
+// Generated on ${date} by ${system['user.name']}
+public class ${javaClass.name} {
 
-#foreach( $anField in $fields )
-    private $anField;
+#foreach( $field in $javaClass.fields )
+    private ${field.type.simpleName} ${field.name};
 #end
 
 }
