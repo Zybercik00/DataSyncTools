@@ -6,6 +6,7 @@ import org.apache.velocity.VelocityContext;
 import org.apache.velocity.app.VelocityEngine;
 import org.apache.velocity.tools.generic.DateTool;
 
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.StringWriter;
 import java.nio.file.Files;
@@ -18,19 +19,20 @@ import java.util.*;
 public class DataSyncEntityGeneratorApplication {
 
     // TODO Move properties to resources
-    private static final String jdbcUrl = "jdbc:h2:mem:testdb";
-    private static final String jdbcUser = "admin";
-    private static final String jdbcPassword = "password";
-    private static final String schemaPattern = "PUBLIC";
-    private static final String targetPackage = "com.github.zybercik00.material";
-    private static final String outputDirectory = "data-sync-entity-generator/src/main/java/";
-    private static final String velocityTemplate = "template.vm";
+    private static final String jdbcUrl = "db.url";
+    private static final String jdbcUser = "db.username";
+    private static final String jdbcPassword = "db.password";
+    private static final String schemaPattern = "v.schemaPattern";
+    private static final String targetPackage = "v.targetPackage";
+    private static final String outputDirectory = "v.outputDirectory";
+    private static final String velocityTemplate = "v.template";
 
     public static void main(String[] args) throws Exception {
         List<JdbcTable> tables;
-
+        Properties dbProperties = new Properties();
+        dbProperties.load(new FileInputStream("/Users/kamilchmiel/Desktop/Projects/DataSyncExcelDraft/data-sync-entity-generator/src/main/resources/database.properties"));
         // TODO [8] Connection from springboot
-        try (Connection connection = DriverManager.getConnection(jdbcUrl, jdbcUser, jdbcPassword)) {
+        try (Connection connection = DriverManager.getConnection(dbProperties.getProperty(jdbcUrl), dbProperties.getProperty(jdbcUser), dbProperties.getProperty(jdbcPassword))) {
             loadSchema(connection);
 
             DatabaseMetaData metaData = connection.getMetaData();
