@@ -30,7 +30,7 @@ public class DataSyncEntityGeneratorApplication {
     public static void main(String[] args) throws Exception {
         List<JdbcTable> tables;
         Properties dbProperties = new Properties();
-        dbProperties.load(new FileInputStream("/Users/kamilchmiel/Desktop/Projects/DataSyncExcelDraft/data-sync-entity-generator/src/main/resources/database.properties"));
+        dbProperties.load(new FileInputStream("data-sync-entity-generator/src/main/resources/database.properties"));
         // TODO [8] Connection from springboot
         try (Connection connection = DriverManager.getConnection(dbProperties.getProperty(jdbcUrl), dbProperties.getProperty(jdbcUser), dbProperties.getProperty(jdbcPassword))) {
             loadSchema(connection);
