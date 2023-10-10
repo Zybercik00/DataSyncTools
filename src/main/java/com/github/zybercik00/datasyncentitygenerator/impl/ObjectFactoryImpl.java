@@ -1,9 +1,17 @@
 package com.github.zybercik00.datasyncentitygenerator.impl;
 
+import com.github.zybercik00.datasyncentitygenerator.JavaClass;
+import com.github.zybercik00.datasyncentitygenerator.JdbcTable;
 import org.apache.velocity.app.VelocityEngine;
+import org.springframework.stereotype.Service;
 
+import java.io.IOException;
+import java.sql.Connection;
 import java.sql.DatabaseMetaData;
+import java.sql.SQLException;
+import java.util.List;
 
+@Service
 public class ObjectFactoryImpl implements ObjectFactory {
 
     private final VelocityEngine velocityEngine;
@@ -58,5 +66,18 @@ public class ObjectFactoryImpl implements ObjectFactory {
                 "org.apache.velocity.runtime.resource.loader.ClasspathResourceLoader");
         velocityEngine.init();
         return velocityEngine;
+    }
+    public void run(ObjectFactory objectFactory) throws IOException, SQLException {
+        List<JdbcTable> tables;
+        objectFactory.getConnectionToDatabase().loadProperties();
+        // TODO [8] Connection from springboot
+        try (Connection connection = objectFactory.getConnectionToDatabase().getConnection()) {
+            objectFactory.getDataInit().loadSchema(connection);
+
+            DatabaseMetaData metaData = connection.getMetaData();
+            tables = objectFactory.getDataLoader(metaData).loadTables();
+        }
+        List<JavaClass> classes = objectFactory.getTransformData().transformTablesToJavaSources(tables);
+        objectFactory.getDataSaver().emitJavaSources(classes);
     }
 }
