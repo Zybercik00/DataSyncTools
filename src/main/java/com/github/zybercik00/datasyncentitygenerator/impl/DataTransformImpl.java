@@ -1,12 +1,14 @@
 package com.github.zybercik00.datasyncentitygenerator.impl;
 
 import com.github.zybercik00.datasyncentitygenerator.*;
+import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 
+@Component
 public class DataTransformImpl implements DataTransform {
     private  final String targetPackage = "v.targetPackage";
 
