@@ -4,6 +4,7 @@ import org.springframework.stereotype.Component;
 
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
@@ -28,7 +29,11 @@ public class ConnectionToDatabaseImpl implements ConnectionToDatabase {
 
     @Override
     public void loadProperties() throws IOException {
-        // TODO load from classpath not from File
-        dbProperties.load(new FileInputStream("data-sync-entity-generator/src/main/resources/database.properties"));
+        InputStream inputStream = getClass().getClassLoader().getResourceAsStream("database.properties");
+        if (inputStream != null) {
+            dbProperties.load(inputStream);
+        } else {
+            throw new IllegalArgumentException("file not found!");
+        }
     }
 }
