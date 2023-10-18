@@ -1,0 +1,14 @@
+# ignore maven directories
+.idea/
+target/
+*.iml
+
+# h2 files
+*.mv.db
+*.trace.db
+
+# macos specific files
+.DS_Store
+
+# temp office files
+~$*

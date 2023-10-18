@@ -4,14 +4,11 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.ToString;
 
-import java.util.List;
-
-@Getter
 @RequiredArgsConstructor
+@Getter
 @ToString
-public class JavaField {
+public class JavaType {
 
-    private final JavaType type;
-    private final String name;
-    private final List<JavaAnnotation> annotationList;
+    private final Class<?> type;
+
 }

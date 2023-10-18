@@ -5,7 +5,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>com.github.zybercik00</groupId>
-    <artifactId>data-sync-excel-project</artifactId>
+    <artifactId>DataSyncTools</artifactId>
     <packaging>pom</packaging>
     <version>1.0-SNAPSHOT</version>
 

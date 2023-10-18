@@ -5,6 +5,9 @@ import ${import};
 #end
 
 // Generated on ${date} by ${system['user.name']}
+#foreach ( $annotation in $javaClas.annotation)
+    ${annotation}
+#end
 public class ${javaClass.name} {
 
 #foreach( $field in $javaClass.fields )
