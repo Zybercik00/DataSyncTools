@@ -2,6 +2,7 @@ package com.github.zybercik00.datasyncentitygenerator.impl;
 
 import com.github.zybercik00.datasyncentitygenerator.JdbcColumn;
 import com.github.zybercik00.datasyncentitygenerator.JdbcTable;
+import lombok.extern.log4j.Log4j2;
 
 import java.sql.DatabaseMetaData;
 import java.sql.ResultSet;
@@ -9,6 +10,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
+@Log4j2
 public class DataLoaderImpl implements DataLoader {
 
     private  final String schemaPattern = "v.schemaPattern";

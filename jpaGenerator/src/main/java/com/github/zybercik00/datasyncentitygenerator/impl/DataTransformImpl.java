@@ -1,6 +1,7 @@
 package com.github.zybercik00.datasyncentitygenerator.impl;
 
 import com.github.zybercik00.datasyncentitygenerator.*;
+import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
@@ -8,6 +9,7 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 
+@Log4j2
 @Component
 public class DataTransformImpl implements DataTransform {
     private  final String targetPackage = "v.targetPackage";
@@ -52,16 +54,20 @@ public class DataTransformImpl implements DataTransform {
     }
 
     private  JavaField generateJavaField(JdbcColumn column) {
-        Class<?> fieldType = TypesConverter.convertTypes(column.getType());
-        String fieldName = CaseConverter.toCamelCase(column.getName());
-        return new JavaField(fieldType, fieldName);
+
+         JavaType javaType = new JavaType(TypesConverter.convertTypes(column.getType()));
+
+         String fieldName = CaseConverter.toCamelCase(column.getName());
+         JavaAnnotation annotation = new JavaAnnotation();
+
+        return new JavaField(javaType, fieldName, (List<JavaAnnotation>) annotation);
     }
 
     private  void calculateImports(JavaClass javaClass) {
         Set<String> imports = new LinkedHashSet<>();
         for (JavaField javaField : javaClass.getFields()) {
-            Class<?> fieldType = javaField.getType();
-            imports.add(fieldType.getName());
+            JavaType fieldType = javaField.getType();
+            imports.add((fieldType.getType()).getName());
         }
         javaClass.setImports(imports);
     }

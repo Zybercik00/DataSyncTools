@@ -1,8 +1,7 @@
 package com.github.zybercik00.datasyncentitygenerator.impl;
 
+import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Component;
-
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.sql.Connection;
@@ -10,6 +9,7 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.util.Properties;
 
+@Log4j2
 @Component
 public class ConnectionToDatabaseImpl implements ConnectionToDatabase {
 

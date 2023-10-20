@@ -5,15 +5,12 @@ import lombok.RequiredArgsConstructor;
 import lombok.ToString;
 import lombok.extern.log4j.Log4j2;
 
-import java.util.List;
-
 @Log4j2
-@Getter
 @RequiredArgsConstructor
+@Getter
 @ToString
-public class JavaField {
+public class JavaType {
 
-    private final JavaType type;
-    private final String name;
-    private final List<JavaAnnotation> annotationList;
+    private final Class<?> type;
+
 }

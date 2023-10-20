@@ -1,17 +1,18 @@
 package com.github.zybercik00.datasyncentitygenerator.impl;
 
+import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Component;
-
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;
 
+@Log4j2
 @Component
 public class DataInitImpl implements DataInit {
 
      @Override
      public void loadSchema(Connection connection) throws SQLException {
-        //
+
         try (Statement statement = connection.createStatement()) {
             // TODO [9] Install using liquibase
             // TODO load scripts from resources

@@ -4,7 +4,6 @@ import com.github.zybercik00.datasyncentitygenerator.JavaClass;
 import lombok.extern.log4j.Log4j2;
 import org.apache.velocity.Template;
 import org.apache.velocity.VelocityContext;
-import org.apache.velocity.app.VelocityEngine;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
