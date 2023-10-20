@@ -2,6 +2,11 @@
 .idea/
 target/
 *.iml
+liquibase-outputChangeLog.xml
+pmd.html
+pmd.xml
+*.lst
+
 
 # h2 files
 *.mv.db
