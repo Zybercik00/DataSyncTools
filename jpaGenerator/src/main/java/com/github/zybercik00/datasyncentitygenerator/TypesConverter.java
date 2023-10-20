@@ -1,10 +1,13 @@
 package com.github.zybercik00.datasyncentitygenerator;
 
+import lombok.extern.log4j.Log4j2;
+
 import java.lang.reflect.Array;
 import java.math.BigDecimal;
 import java.net.URL;
 import java.sql.*;
 
+@Log4j2
 public class TypesConverter {
 
 

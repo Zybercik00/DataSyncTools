@@ -1,7 +1,7 @@
 package com.github.zybercik00.datasyncentitygenerator.impl;
 
 import com.github.zybercik00.datasyncentitygenerator.*;
-import lombok.Getter;
+import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
@@ -9,6 +9,7 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 
+@Log4j2
 @Component
 public class DataTransformImpl implements DataTransform {
     private  final String targetPackage = "v.targetPackage";
