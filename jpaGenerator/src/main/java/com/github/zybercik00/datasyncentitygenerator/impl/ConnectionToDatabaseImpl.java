@@ -2,6 +2,9 @@ package com.github.zybercik00.datasyncentitygenerator.impl;
 
 import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Component;
+
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.sql.Connection;
@@ -17,6 +20,7 @@ public class ConnectionToDatabaseImpl implements ConnectionToDatabase {
     private  final String jdbcUser = "db.username";
     private  final String jdbcPassword = "db.password";
     private final Properties dbProperties = new Properties();
+    private final ClassLoader classLoader = getClass().getClassLoader();
 
 
     @Override
@@ -29,11 +33,20 @@ public class ConnectionToDatabaseImpl implements ConnectionToDatabase {
 
     @Override
     public void loadProperties() throws IOException {
-        InputStream inputStream = getClass().getClassLoader().getResourceAsStream("database.properties");
-        if (inputStream != null) {
-            dbProperties.load(inputStream);
-        } else {
-            throw new IllegalArgumentException("file not found!");
+        InputStream inputStream = null;
+        try {
+            File file = new File(classLoader.getResource("database.properties").getFile());
+            inputStream = new FileInputStream(file);
+        }
+        finally {
+            if (inputStream != null) {
+                try {
+                    dbProperties.load(inputStream);
+                    inputStream.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
         }
     }
 }
